@@ -1,6 +1,8 @@
 import axios from 'axios';
 import isUnauthorizedError from '../utils/httpStatus';
 import { message } from 'antd';
+import { clearAuthToken, useAuthStore } from './authStore';
+import { isTokenValid } from '../utils/jwt';
 
 
 export const api = axios.create({
@@ -15,34 +17,28 @@ export const api = axios.create({
 
 
 api.interceptors.request.use(
-    (config) => {
+    async(config) => {
         if(config.url?.includes('/auth/login')) {
             delete config.headers.Authorization;
             return config;
         }
-        const token = localStorage.getItem('token');
-        if(token) {
-            try {
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                const expirationDate = payload.exp * 1000;
-                
-                if(Date.now() >= expirationDate) {
-                    localStorage.removeItem('token');
-                    delete config.headers.Authorization;
-                    return config;
-                }
-                config.headers.Authorization = `Bearer ${token}`;    
-            }
-            catch (error) {
-                console.error('Error parsing token:', error);
-                delete config.headers.Authorization;
+        let token = localStorage.getItem('token');
+        if(token && !isTokenValid(token)) {
+            const refreshed = await useAuthStore.getState().refreshToken();
+            if(!refreshed) {
+                clearAuthToken();
                 return config;
             }
-        } else {
-            delete config.headers.Authorization;
-            return config;
-        }
+            token = localStorage.getItem('token');
 
+        }
+        if(token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        else {
+            delete config.headers.Authorization;
+        }
+        return config;
     },
     (error) => {
         return Promise.reject(error)
@@ -50,9 +46,7 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-    (response) => {
-        return response;
-    },
+    (response) => response,
     async (error) => {
         const originalRequest = error.config;
         if (isUnauthorizedError(error.response?.status) 
@@ -62,43 +56,34 @@ api.interceptors.response.use(
                 originalRequest._retry = true;
                 try {
                     const refreshToken = localStorage.getItem('refreshToken');
-                    if (!refreshToken) throw new Error('No refresh token found in local storage');
+                    if (!refreshToken) throw new Error('No refresh token found');
 
-                    const user = JSON.parse(localStorage.getItem('user')); //chỗ này phải authStore nhưng tôi không biết làm
-                    const response = await api.post("auth/refresh-token", {
-                        accessToken: localStorage.getItem('token'),
-                        refreshToken: refreshToken,
-                        userId: user?.userId,
-                        role: user?.role,
-                    });
-
-                    if(response.data?.accessToken) {
-                        localStorage.setItem('token', response.data.accessToken);
-                        // authStore
-
+                    const refreshed = await useAuthStore.getState().refreshToken(refreshToken);
+                    if(!refreshed) throw new Error('Token refresh failed');
                         
-
-                        originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
+                        originalRequest.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
                         return api(originalRequest);
-
-                    }
-
+       
                 }
-                catch(error) {
-                    console.error('Error refreshing token:', error);
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('refreshToken');
-                    localStorage.removeItem('user');
+                catch(err) {
+                    console.error('Error refreshing token:', err);
+                    clearAuthToken();
+                    useAuthStore.getState().setUser(null);
+                    message.error('Session expired. Please log in again.');
                     window.location.href = '/login';
+                    return Promise.reject(err);
                 }      
         }
-
         if(!error.response) {
             return Promise.reject({
                 message: "Network Error",
             })
         }
-        return Promise.reject(error);
+        return Promise.reject({
+            message: error.response.data.message || error.message || 'An error occurred',   
+            status: error.response.status,
+            data: error.response.data,
+        });
                 
     }
 
