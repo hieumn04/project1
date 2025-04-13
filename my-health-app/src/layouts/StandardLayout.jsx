@@ -10,12 +10,12 @@ const StandardLayout = () => {
 
     return (
         <Layout>
-            <div>
-                <Header></Header>
-                <div>
-                    <Outlet/>
-                </div>
-            </div>
+            
+                <Header/>
+                <Layout.Content style={{ padding: "20px", background: "#fff" }}>
+                    <Outlet />
+                </Layout.Content>
+            
 
         </Layout>
     )

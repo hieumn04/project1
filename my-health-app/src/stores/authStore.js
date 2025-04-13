@@ -15,19 +15,19 @@ const initialState = {
     error: null,
 };
 
-const createUserObject = (data) => ({
+export const createUserObject = (data) => ({
     userId: data?.userId,
     role: data?.role.toLowerCase().replace("role_", ""),
     fullName: data?.fullName,
     verified: data?.verified,
 });
 
-const setAuthToken = (token) => {
+export const setAuthToken = (token) => {
     localStorage.setItem('token', token);
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 };
 
-const clearAuthToken = () => {
+export const clearAuthToken = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
     delete api.defaults.headers.common['Authorization'];
@@ -51,8 +51,6 @@ export const useAuthStore = create(
 
                     setAuthToken(data.accessToken);
                     localStorage.setItem('refreshToken', data.refreshToken);
-
-
                     set({
                         user: createUserObject(data),
                         token: data.accessToken,
@@ -123,20 +121,20 @@ export const useAuthStore = create(
 
             refreshToken: async() => {
                 set({ isLoading: true });
-                const refreshToken = localStorage.getItem('refreshToken');
-                if(!refreshToken) {
+                const currentRefreshToken = localStorage.getItem('refreshToken');
+                if(!currentRefreshToken) {
                     get().logout();
                     set({ isLoading: false });
                     return false;
                 }
                 try {
-                    const {data} = await api.post("/auth/refresh-token", {refreshToken});
+                    const {data} = await api.post("/auth/refresh-token", {currentRefreshToken});
                     if(!data?.accessToken) {
                         throw new Error("Invalid refresh token response");
                     }
                     setAuthToken(data.accessToken);
-                    const newRefreshToken = data.refreshToken || localStorage.getItem('refreshToken');
-                    localStorage.setItem('refreshToken', refreshToken);
+                    const newRefreshToken = data.refreshToken || currentRefreshToken;
+                    localStorage.setItem('refreshToken', newRefreshToken);
                     const payload = getValidPayload(data.accessToken);
                     set({
                         user: payload ? createUserObject(payload) : get().user,
