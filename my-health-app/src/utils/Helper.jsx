@@ -54,7 +54,7 @@ export const filterMenuItemsByRole = (items, role) => {
     const effectiveRole = role || "public";
 
     return items.filter((item) => {
-        !item.roles && item.roles.includes(effectiveRole)
+        item.roles && item.roles.includes(effectiveRole)
     })
     .map((item) => ({
         key: item.key,

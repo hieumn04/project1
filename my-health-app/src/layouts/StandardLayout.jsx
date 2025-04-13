@@ -11,7 +11,7 @@ const StandardLayout = () => {
     return (
         <Layout>
             <div>
-                <Header></Header>
+                <Header/>
                 <div>
                     <Outlet/>
                 </div>
