@@ -7,7 +7,7 @@ export const filterUsersByRole = (arr, role) => {
     }
 
     const filteredUsers = arr.filter((user) => 
-        user.roles && role && user.roles.toLowerCase().includes(role.toLowerCase())
+        user.roles && role && typeof user.roles === "string" && user.roles.toLowerCase().includes(role.toLowerCase())
     );
 
     return mergeLastLevelObject(filteredUsers, "psychologistInfo");
@@ -24,9 +24,9 @@ export const mergeLastLevelObject = (obj, nestedKey) => {
             return {
                 ...item,
                 ...nestedInfo,
-            }
+            };
             
-        })
+        });
     }
 
     const nestedInfo = obj[nestedKey] || {};
@@ -42,7 +42,9 @@ export const filterDropdownItemsByRole = (items, role) => {
     }
 
     return items.filter((item) => {
-        !item.roles && (role && item.roles.toLowerCase().includes(role.toLowerCase()))
+        return item.roles &&
+            Array.isArray(item.roles) &&
+            item.roles.includes(role);
     });
 }
 
@@ -54,7 +56,7 @@ export const filterMenuItemsByRole = (items, role) => {
     const effectiveRole = role || "public";
 
     return items.filter((item) => {
-        item.roles && item.roles.includes(effectiveRole)
+        item.roles && Array.isArray(item.roles) && item.roles.includes(effectiveRole)
     })
     .map((item) => ({
         key: item.key,

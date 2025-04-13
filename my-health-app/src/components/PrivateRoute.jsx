@@ -15,14 +15,14 @@ export const PrivateRoute = ({
 
     if(requestGuest) {
         return user ? (
-            <Navigate to={getRoleBasePath(user.role)} replace={true} />
+            <Navigate to="/home" replace={true} />
         ) : (
             children
         );
     }
 
     if(!user) {
-        return <Navigate to={"/"} replace={true} />;
+        return <Navigate to={"/login"} replace={true} />;
     }
 
     if(allowedRoles.length && !allowedRoles.includes(user.role)) {
@@ -43,7 +43,7 @@ const getRoleBasePath = (role) => {
         case "parent": 
             return "/parent-profile";    
         default:
-            return "/";
+            return "/home";
     }
 }
 

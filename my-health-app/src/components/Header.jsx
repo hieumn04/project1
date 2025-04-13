@@ -18,6 +18,7 @@ const Header = () => {
     switch(e.key) {
         case "logout":
             logout();
+            navigate("/");
             break;
         case "dashboard":
             navigate(`${user?.role}`);
@@ -41,11 +42,11 @@ const Header = () => {
 
     const menuProps = {
         items: filterDropdownItemsByRole(menuItems, user?.role),
-        onclick: handleMenuClick,
+        onClick: handleMenuClick,
     }
 
     const checkAuthUI = () => {
-        !user ? (
+        return !user ? (
             <div className="flex gap-5">
                 <Link to="/register" className="btn btn-outline">
                     Sign Up
@@ -57,7 +58,7 @@ const Header = () => {
         ) : (
             <Dropdown.Button
                 menu={menuProps}
-                align="end"
+                placement="bottomRight"
                 buttonsRender={([,rightButton]) => [
                     <Button
                         key={user?.role}
@@ -72,10 +73,7 @@ const Header = () => {
                     </Button>,rightButton
                 ]}
                 trigger={"click"}         
-                
-            />
-
-            
+            />            
         )
     }
 
@@ -107,7 +105,7 @@ const Header = () => {
                     </Link>
                 </div>
             
-                <nav className="">
+                <nav className="flex items-center">
                     <Menu
                         mode="horizontal"
                         selectedKeys={[location.pathname]}

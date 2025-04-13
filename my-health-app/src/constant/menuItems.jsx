@@ -3,6 +3,9 @@
 
 
 export const menuItems = [
+    { key: "dashboard", label: "Dashboard", roles: ["student", "psychologist"], special: false },
+    { key: "logout", label: "Logout", roles: ["student", "psychologist", "parent"], special: false },
+    
     {key: "/blog", label: "Blog", path: "/blog"},
     {key:"program", label: "Program", path: "/program",
         roles:["psychologist", "manager", "student"],
