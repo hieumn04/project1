@@ -1,4 +1,79 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
+:root {
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-script: 'Great Vibes', cursive;
+  --main-color: #4f46e5;
+  --green-div: #2cb198;
+}
+
+@layer base {
+  
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+  html {
+    line-height: 24px;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-script);
+    @apply font-bold;
+  }
+  
+  h2 {
+    font-size: 40px;
+  }
+
+  p {
+    font-weight: 200;
+  }
+
+  a {
+    text-decoration: none !important;
+    font-weight: 500 !important; 
+    transition: color 0.3s ease !important;
+    
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .ant-layout,
+  .ant-layout-content {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+  }
+
+  .ant-layout {
+    font-size: 20px !important;
+  }
+
+  .custom-layout {
+    background-color: var(--main-color); 
+  }
+
+  .div-layout {
+    background-color: var(--green-div);
+  }
+
+  .link-icon-move {
+    transition: transform 0.3s ease;
+  }
+  
+  a:hover .link-icon-move {
+    transform: translateX(6px);
+  }
+}
