@@ -59,7 +59,7 @@ const Login = () => {
     return (
         <div className="login-container">
             <div className="login-box">
-                <h2 className="login-title">Sign in</h2>
+                
                 <Form
                     form={form}
                     onFinish={handleSubmit}
@@ -107,9 +107,9 @@ const Login = () => {
                             Sign In
                         </Button>
                     </Form.Item>
-            </Form>
-            <div className="forgot-password">
-                <Link to="/forgot-password">Forgot Password?</Link>
+                </Form>
+            <div className="forgot-password ">
+                <Link className="custom-green-link" to="/forgot-password">Forgot Password?</Link>
             </div>
 
             </div>

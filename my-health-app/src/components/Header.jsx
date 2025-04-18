@@ -1,144 +1,145 @@
-import { useEffect, useMemo } from "react";
-
-import {Dropdown, ConfigProvider, Button, Menu } from "antd";
-import {UserOutlined, CalendarFilled} from '@ant-design/icons';
+import { useMemo } from "react";
+import { Dropdown, Button, Menu, Avatar } from "antd";
+import { UserOutlined } from "@ant-design/icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../stores/authStore";
 import { filterDropdownItemsByRole, filterMenuItemsByRole } from "../utils/Helper";
 import { menuItems } from "../constant/menuItems";
-import { useAuthStore } from "../stores/authStore";
 
 const Header = () => {
-    const user = useAuthStore((state) => state.user);
-    const navigate = useNavigate();   
-    const logout = useAuthStore((state) => state.logout); 
-    const location = useLocation();
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-
-  const handleMenuClick = (e) => {
-    switch(e.key) {
-        case "logout":
-            logout();
-            navigate("/");
-            break;
-        case "dashboard":
-            navigate(`${user?.role}`);
-            break;
-        default:
-            navigate(e.key);
-            break;
+  const handleMenuClick = ({ key }) => {
+    if (key === "logout") {
+      logout();
+      navigate("/");
+    } else if (key === "dashboard") {
+      navigate(`/${user?.role}`);
+    } else {
+      navigate(key);
     }
   };
 
-  
-    const handleDropdownButton = () => {
-        if(user?.role === "student") {
-            navigate("/student-profile")
-        } else if(user?.role === "psychologist") {
-            navigate("psychologist-profile")
-        } else if(user?.role === "parent") {
-            navigate("parent-profile")
-        }
-    } 
+  const handleProfileClick = () => {
+    switch (user?.role) {
+      case "student":
+        navigate("/student-profile");
+        break;
+      case "psychologist":
+        navigate("/psychologist-profile");
+        break;
+      case "parent":
+        navigate("/parent-profile");
+        break;
+      default:
+        break;
+    }
+  };
 
-    const menuProps = {
-        items: filterDropdownItemsByRole(menuItems, user?.role),
-        onClick: handleMenuClick,
+  const menuProps = {
+    items: filterDropdownItemsByRole(menuItems, user?.role),
+    onClick: handleMenuClick,
+  };
+
+  const navItems = useMemo(() => {
+    const filteredItems = filterMenuItemsByRole(menuItems, user?.role).filter(
+      (item) => !item.special
+    );
+    const specialItem = filterMenuItemsByRole(menuItems, user?.role).find(
+      (item) => item.special
+    );
+
+    return { filteredItems, specialItem };
+  }, [user?.role]);
+
+  const renderAuthButtons = () => {
+    if (!user) {
+      return (
+        <div className="flex gap-3 items-center">
+          <Link to="/login">
+            <Button
+              className="custom-button"
+              type="default"
+              size="middle"
+            >
+              Sign In
+            </Button>
+          </Link>
+          <Link to="/register">
+            <Button
+              className="custom-button"
+              type="primary"
+              size="middle"
+            >
+              Sign Up
+            </Button>
+          </Link>
+        </div>
+      );
     }
 
-    const checkAuthUI = () => {
-        return !user ? (
-            <div className="flex gap-5">
-                <Link to="/register" className="btn btn-outline">
-                    Sign Up
-                </Link>
-                <Link to="/login" className="btn btn-primary">
-                    Sign In
-                </Link>
-            </div>
-        ) : (
-            <Dropdown.Button
-                menu={menuProps}
-                placement="bottomRight"
-                buttonsRender={([,rightButton]) => [
-                    <Button
-                        key={user?.role}
-                        icon={<UserOutlined />}
-                        onClick={handleDropdownButton}
-                        className={`flex items-center gap-2 px-3 py-1 rounded-l-md border${
-                            user?.role === "manager" && `w-full pointer-events-none`
-                          }`}        
-                    
-                    >
-                        {user.fullname}
-                    </Button>,rightButton
-                ]}
-                trigger={"click"}         
-            />            
-        )
-    }
-
-    const navItems = useMemo(() => {
-        const filteredItems = filterMenuItemsByRole(menuItems, user?.role)
-            .filter((item) => !item.special);
-
-        const specialItem = filterMenuItemsByRole(menuItems, user?.role)
-            .find((item) => item.special);
+    return (
+      <Dropdown.Button
+        menu={menuProps}
+        placement="bottomRight"
+        trigger={["click"]}
+        buttonsRender={([leftButton, rightButton]) => [
+          <Button
+            key="user"
+            onClick={handleProfileClick}
             
-        return {
-            filteredItems,
-            specialItem,
-        }    
-
-
-    }, [user?.role]);
-
-  
+          >
+            <Avatar
+              size="small"
+              style={{ backgroundColor: "#52c41a" }}
+              icon={<UserOutlined />}
+            />
+            <span className="font-medium text-sm">{user?.fullname}</span>
+          </Button>,
+          rightButton,
+        ]}
+      />
+    );
+  };
 
   return (
-    <>
-        <header className="header">
-            <div className="header-container">
-                <div className="logo">
-                    <Link to="/">
-                        <span className="logo-icon">🧠</span>
-                        <span className="logo-text">Mental Health Support</span>
-                    </Link>
-                </div>
-            
-                <nav className="flex items-center">
-                    <Menu
-                        mode="horizontal"
-                        selectedKeys={[location.pathname]}
-                        items={navItems.filteredItems}
-                        style={{
-                            flex:1,
-                            minWidth: 0,
-                            justifyContent: "end",
-                            borderBottom: 0,
-                        }}
-                    />
-                    {navItems.specialItem && (
-                        <>
-                            <Button
-                                type="primary"
-                                className="rounded-full"
-                                onClick={() => navigate(navItems.specialItem.key)}
-                            >
-                                <p className="text-white w-full">
-                                    {navItems.specialItem.label}
-                                </p>
+    <header className="  w-full">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-2">
+          <span className="text-3xl">🧠</span>
+          <span className="text-xl sm:text-2xl font-bold text-green-700">
+            Mental Health Support
+          </span>
+        </Link>
 
-                            </Button>
-                        </>
-                    )}
-                    <div className="nav-actions" id="authButtons">
-                        {checkAuthUI()}
-                    </div>
-                </nav>
-            </div>
-        </header>
-    </>
+        {/* Auth Buttons / Dropdown */}
+        <div className="hidden sm:flex">{renderAuthButtons()}</div>
+      </div>
+
+      {/* Navigation Menu */}
+      <div className="max-w-7xl mx-auto px-4 flex justify-between items-center pb-3 flex-wrap">
+        <Menu
+          mode="horizontal"
+          selectedKeys={[location.pathname]}
+          items={navItems.filteredItems}
+          className="flex-1 border-none"
+        />
+        {navItems.specialItem && (
+          <Button
+            type="primary"
+            className="rounded-full mt-2 sm:mt-0 ml-0 sm:ml-4"
+            onClick={() => navigate(navItems.specialItem.key)}
+          >
+            <span className="text-white font-semibold">{navItems.specialItem.label}</span>
+          </Button>
+        )}
+      </div>
+    </header>
   );
-}   
+};
 
 export default Header;
