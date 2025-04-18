@@ -1,5 +1,6 @@
 
-import './App.css'
+import './index.css'
+import "keen-slider/keen-slider.min.css";
 import Header from './components/Header'
 import { Calendar, ConfigProvider } from 'antd'
 import ScrollToTop from './components/ScrollToTop';
@@ -13,7 +14,7 @@ function App() {
     <ConfigProvider
         theme={{
             token: {
-                colorPrimary: "#1DA57A",
+                colorPrimary: "#24291B",
             },
             components : {
               Notification: {

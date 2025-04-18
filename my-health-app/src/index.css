@@ -1,4 +1,162 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
+:root {
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-script: 'Great Vibes', cursive;
+  --main-color: #4f46e5;
+  --green-div: #2cb198;
+}
+
+@layer base {
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    line-height: 24px;
+  }
+
+  body {
+    font-family: var(--font-sans);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-script);
+    @apply font-bold;
+  }
+
+  h2 {
+    font-size: 50px;
+  }
+
+  p {
+    font-weight: 200;
+  }
+
+  a {
+    font-weight: 500 !important;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  
+  .ant-layout,
+  .ant-layout-content {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+  }
+
+  .ant-layout {
+    font-size: 20px !important;
+  }
+
+  .custom-layout {
+    background-color: var(--main-color);
+  }
+
+  .div-layout {
+    background-color: var(--green-div);
+  }
+
+  .link-icon-move {
+    transition: transform 0.3s ease;
+  }
+
+  a:hover .link-icon-move {
+    transform: translateX(6px);
+  }
+
+  
+    
+    .slick-dots li {
+      width: 25px !important;
+      height: 25px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      display: inline-block !important;
+    }
+  
+
+    .slick-dots li::before,
+    .slick-dots li::after,
+    .slick-dots li button::before,
+    .slick-dots li button::after {
+      content: none !important;
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      
+    }
+
+    .slick-dots li button { 
+      width: 16px !important;
+      height: 16px !important;
+      border-radius: 50% !important;
+      background-color: transparent !important; 
+      border: 1px solid #ffffff !important;
+      opacity: 0.9 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      display: block !important;
+      cursor: pointer !important;
+      transition: background-color 0.3s ease, transform 0.3s ease !important;
+    }
+
+    .slick-dots li.slick-active button {
+      background-color: #ffffff !important;
+    }
+
+    .custom-dots li button:hover {
+      background-color: #E0C3C0 !important; 
+      
+    }
+
+    .custom-dots {
+      list-style: none !important;
+      position: absolute;
+      bottom: 1rem;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 12px !important;
+    }
+
+    .custom-green-link {
+      color: #1D9A8D !important;
+      
+    }
+
+    .custom-button {
+      background-color: var(--green-div) !important; 
+      border-color: var(--green-div) !important;
+      color: #ffffff !important; 
+      border-radius: 9999px !important;
+      padding: 0 1.5rem !important;
+      height: 36px !important;
+      line-height: 36px !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;  
+      transition: all 0.3s ease !important;
+    }
+    
+    .custom-button:hover {
+      background-color: #23917a !important; 
+      border-color: #23917a !important;
+      transform: translateY(-1px);
+    }
+    
+    .login-container {
+      margin-top: 50px;
+      height: 100%;
+      width: 100%;
+      
+    }
+    
+  
+}

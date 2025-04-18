@@ -9,10 +9,10 @@ import { Outlet } from "react-router-dom";
 const StandardLayout = () => {
 
     return (
-        <Layout>
+        <Layout >
             
                 <Header/>
-                <Layout.Content style={{ padding: "20px", background: "#fff" }}>
+                <Layout.Content >
                     <Outlet />
                 </Layout.Content>
             
